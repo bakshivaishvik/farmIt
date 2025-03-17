@@ -9,6 +9,10 @@
 <body>
     <div class="container">
         <h1>Plant Disease Identification</h1>
+        <div class="nav">
+            <a href="{{ url_for('index') }}">Disease Detection</a>
+            <a href="{{ url_for('crop_recommendation') }}">Crop Recommendation</a>
+        </div>
         <form method="POST" enctype="multipart/form-data" class="upload-form">
             <label for="file-upload" class="custom-file-upload">
                 Choose Image

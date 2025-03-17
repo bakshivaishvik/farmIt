@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crop Recommendation</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+        }
+        h2 {
+            text-align: center;
+            color: #333;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            font-weight: bold;
+        }
+        input {
+            width: 100%;
+            padding: 8px;
+            margin-top: 5px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        button {
+            width: 100%;
+            padding: 10px;
+            background: #28a745;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background: #218838;
+        }
+        .error {
+            color: red;
+            text-align: center;
+        }
+        .recommendations {
+            margin-top: 20px;
+            padding: 10px;
+            background: #e9f5e9;
+            border-left: 5px solid #28a745;
+        }
+    </style>
+    <script>
+        async function getWeatherData() {
+            let lat = document.getElementById("lat").value.trim();
+            let lon = document.getElementById("lon").value.trim();
+
+            if (!lat || !lon) {
+                alert("Please enter or fetch latitude and longitude.");
+                return;
+            }
+
+            try {
+                let response = await fetch("/get_weather", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ lat: parseFloat(lat), lon: parseFloat(lon) })
+                });
+
+                let data = await response.json();
+                if (data.temperature !== undefined) {
+                    document.getElementById("temperature").value = data.temperature;
+                    document.getElementById("humidity").value = data.humidity;
+                    document.getElementById("rainfall").value = data.rainfall;
+                } else {
+                    alert("Error fetching weather data. Try again.");
+                }
+            } catch (error) {
+                alert("Failed to fetch weather data: " + error);
+            }
+        }
+
+        function getLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    position => {
+                        document.getElementById("lat").value = position.coords.latitude;
+                        document.getElementById("lon").value = position.coords.longitude;
+                        document.getElementById("location-status").innerText = 
+                            `Detected: ${position.coords.latitude.toFixed(4)}, ${position.coords.longitude.toFixed(4)}`;
+                        getWeatherData();
+                    },
+                    error => {
+                        alert("Error getting location: " + error.message);
+                    }
+                );
+            } else {
+                alert("Geolocation is not supported by this browser.");
+            }
+        }
+
+        function validateForm() {
+            let requiredFields = ["N", "P", "K", "ph", "temperature", "humidity", "rainfall"];
+            for (let field of requiredFields) {
+                let value = document.getElementById(field).value.trim();
+                if (!value) {
+                    alert(`Please fill in the ${field} field.`);
+                    return false;
+                }
+            }
+            return true;
+        }
+    </script>
+</head>
+<body>
+
+    <h2>Crop Recommendation System</h2>
+
+    <form action="/crop" method="POST" onsubmit="return validateForm();">
+        <label for="N">Nitrogen (N):</label>
+        <input type="number" id="N" name="N" step="0.01" required><br>
+
+        <label for="P">Phosphorus (P):</label>
+        <input type="number" id="P" name="P" step="0.01" required><br>
+
+        <label for="K">Potassium (K):</label>
+        <input type="number" id="K" name="K" step="0.01" required><br>
+
+        <label for="ph">pH Level:</label>
+        <input type="number" id="ph" name="ph" step="0.01" required><br>
+
+        <h3>Weather Data</h3>
+
+        <label for="lat">Latitude:</label>
+        <input type="text" id="lat" name="lat" readonly>
+        <label for="lon">Longitude:</label>
+        <input type="text" id="lon" name="lon" readonly>
+        <button type="button" onclick="getLocation()">Use My Location</button>
+        <span id="location-status"></span>
+        <button type="button" onclick="getWeatherData()">Fetch Weather</button><br>
+
+        <label for="temperature">Temperature (°C):</label>
+        <input type="number" id="temperature" name="temperature" step="0.01" required><br>
+
+        <label for="humidity">Humidity (%):</label>
+        <input type="number" id="humidity" name="humidity" step="0.01" required><br>
+
+        <label for="rainfall">Rainfall (mm):</label>
+        <input type="number" id="rainfall" name="rainfall" step="0.01" required><br>
+
+        <button type="submit">Get Crop Recommendations</button>
+    </form>
+
+    {% if recommendations %}
+        <h3>Recommended Crops</h3>
+        <ul>
+            {% for crop, probability in recommendations %}
+                <li>{{ crop }} - {{ (probability * 100) | round(2) }}%</li>
+            {% endfor %}
+        </ul>
+    {% elif error %}
+        <p style="color: red;">{{ error }}</p>
+    {% endif %}
+
+</body>
+</html>

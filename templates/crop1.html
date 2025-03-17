@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Crop Recommendation</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; }
+        .nav { margin-bottom: 30px; }
+        .nav a { margin-right: 15px; text-decoration: none; color: #333; }
+        form { background: #f5f5f5; padding: 20px; border-radius: 8px; }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; }
+        input { width: 100%; padding: 8px; box-sizing: border-box; }
+        button { background: #4CAF50; color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; }
+        .prediction { margin-top: 20px; padding: 15px; background: #e8f5e9; border-radius: 4px; }
+        .error { color: red; margin-top: 10px; }
+        .recommendations {
+    margin-top: 20px;
+}
+
+.crop-card {
+    background: #fff;
+    padding: 15px;
+    margin-bottom: 10px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.confidence {
+    height: 20px;
+    background: #eee;
+    border-radius: 10px;
+    position: relative;
+    margin-top: 8px;
+}
+
+.confidence-bar {
+    background: #4CAF50;
+    height: 100%;
+    border-radius: 10px;
+    transition: width 0.5s ease;
+}
+
+.confidence-text {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #333;
+    font-weight: bold;
+}
+
+.note {
+    color: #666;
+    font-size: 0.9em;
+    margin-top: 15px;
+}
+    </style>
+</head>
+<body>
+    <div class="nav">
+        <a href="{{ url_for('index') }}">Disease Detection</a>
+        <a href="{{ url_for('crop_recommendation') }}">Crop Recommendation</a>
+    </div>
+
+    <h1>Crop Recommendation System</h1>
+    
+    <form method="POST">
+        <div class="form-group">
+            <label>Nitrogen (N) content in soil:</label>
+            <input type="number" step="0.1" name="N" required>
+        </div>
+        
+        <div class="form-group">
+            <label>Phosphorus (P) content in soil:</label>
+            <input type="number" step="0.1" name="P" required>
+        </div>
+        
+        <div class="form-group">
+            <label>Potassium (K) content in soil:</label>
+            <input type="number" step="0.1" name="K" required>
+        </div>
+        
+        <div class="form-group">
+            <label>Soil pH:</label>
+            <input type="number" step="0.1" name="ph" required>
+        </div>
+        
+        <div class="form-group">
+            <label>Temperature (°C):</label>
+            <input type="number" step="0.1" name="temperature" required>
+        </div>
+        
+        <div class="form-group">
+            <label>Rainfall (mm):</label>
+            <input type="number" step="0.1" name="rainfall" required>
+        </div>
+        
+        <div class="form-group">
+            <label>Humidity (%):</label>
+            <input type="number" step="0.1" name="humidity" required>
+        </div>
+        
+        <button type="submit">Get Recommendation</button>
+    </form>
+
+    {% if error %}
+        <div class="error">{{ error }}</div>
+    {% endif %}
+
+    {% if recommendations %}
+    <div class="prediction">
+        <h2>Top Crop Recommendations:</h2>
+        <div class="recommendations">
+            {% for crop, prob in recommendations %}
+            <div class="crop-card">
+                <h3>{{ loop.index }}. {{ crop|title }}</h3>
+                <div class="confidence">
+                    <div class="confidence-bar" style="width: {{ prob*100 }}%"></div>
+                    <span class="confidence-text">{{ (prob*100)|round(1) }}%</span>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        <p class="note">Recommendations are sorted by model confidence. Consider your local conditions and consult agricultural experts before final decision.</p>
+    </div>
+{% endif %}
+</body>
+</html>

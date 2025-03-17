@@ -1,9 +1,11 @@
-from flask import Flask, render_template, request, redirect, url_for, send_from_directory
+from flask import Flask, render_template, request, redirect, url_for, send_from_directory,jsonify
 import os
 from PIL import Image
 import torch
 from transformers import AutoImageProcessor, AutoModelForImageClassification
 import google.generativeai as genai  # Import Gemini API
+import joblib
+import requests
 
 # Initialize Flask app
 app = Flask(__name__)
@@ -20,10 +22,85 @@ if not os.path.exists(UPLOAD_FOLDER):
 processor = AutoImageProcessor.from_pretrained("linkanjarad/mobilenet_v2_1.0_224-plant-disease-identification")
 model = AutoModelForImageClassification.from_pretrained("linkanjarad/mobilenet_v2_1.0_224-plant-disease-identification")
 
+processor = AutoImageProcessor.from_pretrained("linkanjarad/mobilenet_v2_1.0_224-plant-disease-identification")
+disease_model = AutoModelForImageClassification.from_pretrained("linkanjarad/mobilenet_v2_1.0_224-plant-disease-identification")
+
 # Configure Gemini API
-GEMINI_API_KEY = input('enter your gemini api key!!')  # Replace with your Gemini API key
+crop_model = joblib.load("crop.pkl")
+GEMINI_API_KEY = input('enetr gemini api key')  # Replace with your Gemini API key
 genai.configure(api_key=GEMINI_API_KEY)
 model_gemini = genai.GenerativeModel('gemini-2.0-flash-thinking-exp-01-21')  # Use the Gemini text model
+
+WEATHER_API_KEY = input('enter weather api key')
+
+def get_weather_data(lat, lon):
+    """Fetch weather data from OpenWeatherMap API"""
+    url = f"http://api.openweathermap.org/data/2.5/weather?lat={lat}&lon={lon}&appid={WEATHER_API_KEY}&units=metric"
+    response = requests.get(url)
+    if response.status_code == 200:
+        data = response.json()
+        return {
+            'temperature': data['main']['temp'],
+            'humidity': data['main']['humidity'],
+            'rainfall': data.get('rain', {}).get('1h', 0)  # mm in last hour
+        }
+    return None
+
+@app.route('/get_weather', methods=['POST'])
+def get_weather():
+    """Endpoint for frontend to fetch weather data"""
+    data = request.json
+    weather = get_weather_data(data['lat'], data['lon'])
+    return jsonify(weather)
+
+
+
+@app.route("/crop", methods=["POST","GET"])
+def crop_recommendation():
+    if request.method == "POST":
+        try:
+            # Validate soil parameters
+            soil_params = ['N', 'P', 'K', 'ph']
+            for param in soil_params:
+                value = request.form.get(param, '').strip()
+                if not value:
+                    raise ValueError(f"Missing required soil parameter: {param}")
+                
+            features = [
+                float(request.form['N']),
+                float(request.form['P']),
+                float(request.form['K']),
+                float(request.form['ph']),
+                float(request.form['temperature']),
+                float(request.form['rainfall']),
+                float(request.form['humidity'])
+            ]
+            
+            # Get probabilities for all crops
+            probabilities = crop_model.predict_proba([features])[0]
+            
+            # Create list of (crop, probability) pairs
+            crop_probs = list(zip(crop_model.classes_, probabilities))
+            
+            # Sort by probability descending
+            sorted_crops = sorted(crop_probs, key=lambda x: x[1], reverse=True)
+            
+            # Get top 5 recommendations
+            recommendations = sorted_crops[:5]
+            
+            return render_template("crop.html", 
+                                recommendations=recommendations,
+                                form_data=request.form)
+            
+        except ValueError as e:
+            error = f"Invalid input: {str(e)}"
+            return render_template("crop.html", error=error)
+        except Exception as e:
+            error = f"Error processing request: {str(e)}"
+            return render_template("crop.html", error=error)
+    
+    return render_template("crop.html", recommendations=None)
+
 
 # Function to get solution from Gemini API
 def get_solution_for_disease(disease_name):
@@ -101,4 +178,4 @@ def uploaded_file(filename):
 
 # Run the Flask app
 if __name__ == "__main__":
-    app.run(host='0.0.0.0',port=5002)
+    app.run(host='192.168.0.110',debug=True, port=5000, ssl_context=("C:/Users/Sonu/Desktop/MY_HACKS-2024/mypulls/GeoAttendance/cert.pem", "C:/Users/Sonu/Desktop/MY_HACKS-2024/mypulls/GeoAttendance/key.pem")) 
