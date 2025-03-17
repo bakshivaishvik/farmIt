@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Plant Disease Identification</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Plant Disease Identification</h1>
+        <form method="POST" enctype="multipart/form-data" class="upload-form">
+            <label for="file-upload" class="custom-file-upload">
+                Choose Image
+            </label>
+            <input id="file-upload" type="file" name="file" accept="image/*" required>
+            <span id="file-name">No file chosen</span>
+            <button type="submit">Upload and Predict</button>
+        </form>
+        
+        {% if prediction %}
+            <div class="results">
+                <h2>Prediction: <span class="disease-name">{{ prediction }}</span></h2>
+                <p class="confidence">Confidence: {{ "%.2f"|format(confidence * 100) }}%</p>
+                <img src="{{ url_for('uploaded_file', filename=image_url) }}" alt="Uploaded Image" class="uploaded-image">
+                
+                <div class="solution">
+                    <h3>Solution</h3>
+                    <div class="solution-content">
+                        {{ solution | safe }}
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+
+    <script>
+        document.getElementById('file-upload').addEventListener('change', function() {
+            var fileName = this.files[0].name;
+            document.getElementById('file-name').textContent = fileName;
+            console.log('hehehe')
+        });
+    </script>
+</body>
+</html>
