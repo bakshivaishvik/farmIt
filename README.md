@@ -1,19 +1,19 @@
-# My Hacks 2025
+# FarmIt
 
 ## Overview
-This repository contains two main projects:
+This repository contains a comprehensive farming assistant project that integrates two main components:
 
-1. **3D Edu Tutor**: A modern web-based 3D educational tutor application built with React and Vite. It provides an interactive and immersive learning experience using 3D models and animations.
+1. **FarmBuddy**: A modern web-based 3D farming assistant application built with React and Vite. It provides an interactive and immersive experience using 3D models and animations to assist farmers in understanding farming techniques and tools.
 2. **FarmIt**: A Python-based platform designed to assist farmers with crop management, disease detection, and distribution. It includes a web interface for farmers and distributors.
 
 ---
 
-## 3D Edu Tutor
+## FarmBuddy
 
 ### Features
-- Interactive 3D models and animations.
+- Interactive 3D models and animations tailored for farming education.
 - Real-time chat functionality.
-- FPS (First Person Shooter) style player experience.
+- FPS (First Person Shooter) style player experience for exploring virtual farming environments.
 - Modular React components for scalability.
 
 ### Tech Stack
@@ -29,7 +29,7 @@ This repository contains two main projects:
 - `public/`: Static assets like 3D models and images.
 
 ### How to Run
-1. Navigate to the `3D-edu-tutor` directory.
+1. Navigate to the `FarmBuddy` directory.
 2. Install dependencies:
    ```bash
    npm install
