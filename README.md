@@ -1,150 +1,92 @@
-FarmIt - Agricultural Intelligence Platform
-FarmIt is a Flask-based web application combining computer vision and machine learning to empower farmers with plant disease detection and crop recommendation capabilities. The system integrates geolocation-based weather data and AI-powered diagnostics for comprehensive agricultural support.
+# My Hacks 2025
 
-Features
-Plant Disease Detection:
+## Overview
+This repository contains two main projects:
 
-Image-based disease identification using MobileNetV2
+1. **3D Edu Tutor**: A modern web-based 3D educational tutor application built with React and Vite. It provides an interactive and immersive learning experience using 3D models and animations.
+2. **FarmIt**: A Python-based platform designed to assist farmers with crop management, disease detection, and distribution. It includes a web interface for farmers and distributors.
 
-AI-generated treatment solutions via Gemini API
+---
 
-Confidence scoring for predictions
+## 3D Edu Tutor
 
-Crop Recommendation:
+### Features
+- Interactive 3D models and animations.
+- Real-time chat functionality.
+- FPS (First Person Shooter) style player experience.
+- Modular React components for scalability.
 
-Machine learning model for optimal crop selection
+### Tech Stack
+- **Frontend**: React, Vite
+- **Styling**: CSS
+- **Assets**: 3D models (.glb), images, and logos
 
-Probability-based top 5 recommendations
+### File Structure
+- `src/`: Contains the main React application code.
+  - `components/`: Modular React components.
+  - `helpers/`: Utility functions for morph targets and mapping.
+  - `hooks/`: Custom React hooks for Convai client, head tracking, and lip sync.
+- `public/`: Static assets like 3D models and images.
 
-Soil parameter analysis (N, P, K, pH)
+### How to Run
+1. Navigate to the `3D-edu-tutor` directory.
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
+3. Start the development server:
+   ```bash
+   npm run dev
+   ```
+4. Open the application in your browser at `http://localhost:3000`.
 
-Weather Integration:
+---
 
-Real-time weather data from OpenWeatherMap
+## FarmIt
 
-Temperature, humidity, and rainfall analysis
+### Features
+- User authentication for farmers and distributors.
+- Crop management and disease detection using machine learning.
+- Dashboard for distributors and farmers.
+- File uploads for plant images.
 
-Secure Authentication:
+### Tech Stack
+- **Backend**: Python (Flask)
+- **Database**: SQLite
+- **Machine Learning**: Pre-trained models for disease detection
+- **Frontend**: HTML, CSS
 
-HTTPS with SSL/TLS encryption
+### File Structure
+- `auth.py`: Handles user authentication.
+- `disease_detect.py`: Implements disease detection logic.
+- `models.py`: Contains database models.
+- `templates/`: HTML templates for the web interface.
+- `static/`: CSS files for styling.
+- `uploads/`: Stores uploaded images.
 
-Secure API key management
+### How to Run
+1. Navigate to the `farmIt` directory.
+2. Install required Python packages:
+   ```bash
+   pip install -r requirements.txt
+   ```
+3. Run the Flask application:
+   ```bash
+   python auth.py
+   ```
+4. Access the application in your browser at `http://localhost:5000`.
 
-Data Management:
+---
 
-Image upload handling
+## Certificates
+- `cert.pem` and `key.pem`: SSL certificates for secure communication.
 
-Session-based user interactions
+---
 
-Technologies Used
-Backend: Flask, PyTorch
+## Contributions
+Feel free to fork this repository and submit pull requests. Contributions are welcome!
 
-Computer Vision: Transformers, PIL
+---
 
-AI Integration: Google Gemini API
-
-Machine Learning: scikit-learn (via joblib)
-
-Geolocation: OpenWeatherMap API
-
-Security: SSL encryption, API key validation
-
-Installation
-Clone the repository:
-
-git clone https://github.com/yourusername/agri-care.git  
-cd agri-care  
-Install dependencies:
-
-
-pip install flask torch transformers pillow google-generativeai joblib requests  
-Configure environment:
-
-bash
-mkdir -p uploads  
-touch cert.pem key.pem  # Generate SSL certificates  
-Run the application:
-
-bash
-python app.py  
-Access at https://your-ip:5000
-
-API Endpoints
-Core Functionality
-POST / (Home):
-
-File upload for disease detection
-
-Returns prediction, confidence, and treatment guide
-
-POST /crop:
-
-Accepts soil parameters (N, P, K, pH)
-
-Returns top 5 crop recommendations with probabilities
-
-Weather Service
-POST /get_weather:
-
-json
-{
-  "lat": 12.34,
-  "lon": 56.78
-}
-Returns real-time temperature, humidity, and rainfall
-
-Data Handling
-GET /uploads/<filename>: Serve uploaded plant images
-
-System Architecture
-AgriCare/
-├── app.py              # Main application logic  
-├── crop.pkl            # Trained crop model  
-├── cert.pem            # SSL certificate  
-├── key.pem             # SSL key  
-├── templates/          # UI components  
-│   ├── index.html      # Disease detection interface  
-│   └── crop.html       # Crop recommendation form  
-└── uploads/            # User-uploaded images  
-
-Security Protocols
-Data Protection:
-
-All user uploads isolated in /uploads directory
-
-Automatic image cleanup after processing
-
-API Security:
-
-Gemini and Weather API keys excluded from source control
-
-HTTPS mandatory for all communications
-
-Validation:
-
-Strict input sanitization for soil parameters
-
-Image type verification before processing
-
-Future Roadmap
-Mobile app integration
-
-Multilingual support for treatment guides
-
-Historical disease outbreak visualization
-
-Soil quality prediction models
-
-Farmer community forum integration
-
-License
-MIT License - See LICENSE
-
-Acknowledgments
-Hugging Face for pretrained vision models
-
-Google Gemini for AI solutions
-
-OpenWeatherMap for meteorological data
-
-scikit-learn for machine learning infrastructure
+## License
+This project is licensed under the MIT License. See the `LICENSE` file for details.
